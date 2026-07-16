@@ -41,10 +41,18 @@ class TrafficGame : ApplicationAdapter() {
 
         // models/car1.glb dosyası assets altında yoksa otomatik olarak kırmızı bir
         // kutu (placeholder) render edilir, böylece model eklemeden de test edebilirsin.
-        car = CarController(ModelLoader.loadCarOrPlaceholder("models/car1.glb"))
+        car = CarController(ModelLoader.loadCarOrPlaceholder("models/suzuki_motor.glb"))
         road = RoadGenerator()
         cameraManager = CameraManager(camera, car)
     }
+    car = CarController(ModelLoader.loadCarOrPlaceholder("models/2022_bmw_m440i_xdrive_gran_coupe.glb"))
+        road = RoadGenerator()
+        cameraManager = CameraManager(camera, car)
+}
+car = CarController(ModelLoader.loadCarOrPlaceholder("models/2014_lbworks_bmw_4_series_body_kit_f82.glb"))
+        road = RoadGenerator()
+        cameraManager = CameraManager(camera, car)
+}
 
     override fun render() {
         val delta = Gdx.graphics.deltaTime
