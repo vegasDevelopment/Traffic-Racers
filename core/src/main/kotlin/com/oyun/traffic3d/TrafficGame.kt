@@ -41,7 +41,7 @@ class TrafficGame : ApplicationAdapter() {
 
         // models/car1.glb dosyası assets altında yoksa otomatik olarak kırmızı bir
         // kutu (placeholder) render edilir, böylece model eklemeden de test edebilirsin.
-        car = CarController(ModelLoader.loadCarOrPlaceholder("models/suzuki_motor.glb"))
+        car = CarController(ModelLoader.loadCarOrPlaceholder("models/suzuki_gsx_750_bike_3d_model.glb"))
         road = RoadGenerator()
         cameraManager = CameraManager(camera, car)
     }
