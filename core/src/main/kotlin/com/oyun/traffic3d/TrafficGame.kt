@@ -13,7 +13,8 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight
 
 /**
  * Oyunun giriş noktası. Bu sınıf hem Android hem masaüstü tarafından çağrılır.
- * Şu an için: 1 oyuncu arabası + sonsuz yol + 3 kamera modu (arka/kaput/iç mekan).
+ * Şu an için: 1 oyuncu arabası (3 model arasından seçilebilir) + sonsuz yol +
+ * 3 kamera modu (arka/kaput/iç mekan).
  * Trafik yapay zekası, skor sistemi, şerit değiştirme animasyonu gibi özellikler
  * henüz eklenmedi - bunlar bir sonraki adımlar.
  */
@@ -25,6 +26,14 @@ class TrafficGame : ApplicationAdapter() {
     private lateinit var cameraManager: CameraManager
     private lateinit var car: CarController
     private lateinit var road: RoadGenerator
+
+    // Seçilebilir araba modelleri - yeni araba eklemek için buraya bir satır eklemen yeterli.
+    private val carModelPaths = listOf(
+        "models/suzuki_gsx_750_bike_3d_model.glb",
+        "models/2022_bmw_m440i_xdrive_gran_coupe.glb",
+        "models/2014_lbworks_bmw_4_series_body_kit_f82.glb"
+    )
+    private var currentCarIndex = 0
 
     override fun create() {
         modelBatch = ModelBatch()
@@ -39,20 +48,28 @@ class TrafficGame : ApplicationAdapter() {
             far = 300f
         }
 
-        // models/car1.glb dosyası assets altında yoksa otomatik olarak kırmızı bir
-        // kutu (placeholder) render edilir, böylece model eklemeden de test edebilirsin.
-        car = CarController(ModelLoader.loadCarOrPlaceholder("models/suzuki_gsx_750_bike_3d_model.glb"))
         road = RoadGenerator()
+
+        // models/*.glb dosyaları assets altında yoksa otomatik olarak kırmızı bir
+        // kutu (placeholder) render edilir, böylece model eklemeden de test edebilirsin.
+        loadCar(currentCarIndex)
+    }
+
+    private fun loadCar(index: Int) {
+        val previousPosition = if (::car.isInitialized) car.position else null
+
+        car = CarController(ModelLoader.loadCarOrPlaceholder(carModelPaths[index]))
+
+        // Araba değiştirince aynı yerden devam etsin, sıfırlanmasın.
+        previousPosition?.let { car.position.set(it) }
+
         cameraManager = CameraManager(camera, car)
     }
-    car = CarController(ModelLoader.loadCarOrPlaceholder("models/2022_bmw_m440i_xdrive_gran_coupe.glb"))
-        road = RoadGenerator()
-        cameraManager = CameraManager(camera, car)
-}
-car = CarController(ModelLoader.loadCarOrPlaceholder("models/2014_lbworks_bmw_4_series_body_kit_f82.glb"))
-        road = RoadGenerator()
-        cameraManager = CameraManager(camera, car)
-}
+
+    private fun nextCar() {
+        currentCarIndex = (currentCarIndex + 1) % carModelPaths.size
+        loadCar(currentCarIndex)
+    }
 
     override fun render() {
         val delta = Gdx.graphics.deltaTime
@@ -85,6 +102,12 @@ car = CarController(ModelLoader.loadCarOrPlaceholder("models/2014_lbworks_bmw_4_
         // Android'de bunu ekranda bir "kamera değiştir" butonuna bağlayacağız.
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             cameraManager.nextMode()
+        }
+
+        // Test için: masaüstünde TAB tuşuyla araba değiştir.
+        // Android'de bunu ekranda bir "araba değiştir" butonuna bağlayacağız.
+        if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
+            nextCar()
         }
     }
 
