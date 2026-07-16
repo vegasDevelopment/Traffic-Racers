@@ -1,0 +1,2 @@
+rootProject.name = "Traffic3D"
+include ':android', ':core'
